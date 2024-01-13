@@ -1,0 +1,65 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+# data cleaning and predictin how many people died and survived!
+import numpy as np
+titanic=pd.read_csv("titanic_train.csv")
+titanic.info()
+titanic.columns
+sb.heatmap(titanic.isnull())
+titanic.Cabin
+titanic.pop("Cabin")
+titanic.columns
+sb.countplot(data=titanic,x="Survived")
+sb.countplot(data=titanic,x="Survived",hue="Sex")
+sb.countplot(data=titanic,x="Survived",hue="Pclass")
+titanic[titanic['Pclass']==1]['Age'].mean()
+titanic[titanic['Pclass']==2]['Age'].mean()
+titanic[titanic['Pclass']==3]['Age'].mean()
+sb.boxplot(data=titanic,x="Pclass",y="Age")
+def rm(col):
+  Age=col[0]
+  Pclass=col[1]
+  if pd.isnull(Age):
+    if Pclass==1:
+      return 38
+    elif Pclass==2:
+      return 30
+    else:
+      return 25
+  else:
+      return Age
+titanic[['Age','Pclass']]
+titanic['Age']=titanic[['Age','Pclass']].apply(rm,axis=1)
+sb.heatmap(titanic.isnull())
+titanic.dropna(inplace=True)
+titanic.columns
+titanic.info()
+gender=pd.get_dummies(titanic['Sex'],drop_first=True)
+gender
+emb=pd.get_dummies(titanic['Embarked'])
+emb
+titanic.info()
+titanic.columns
+titanic.drop(['PassengerId', 'Name', 'Sex',
+       'Ticket', 'Fare', 'Embarked'],axis=1,inplace=True)
+titanic.columns
+titanic=pd.concat([titanic,emb,gender],axis=1)
+titanic.columns
+X=titanic[['Pclass', 'Age', 'SibSp', 'Parch','Pclass', 'Q', 'S', 'male']]
+y=titanic['Survived']
+from sklearn.linear_model import LogisticRegression
+iit=LogisticRegression()
+iit.fit(X,y)
+pred=print(iit.predict(X))
+print(y)
+import warnings
+warnings.filterwarnings("ignore")
+
+res=iit.predict([[2,0,1,2,3,2,4,1]])
+
+if(res==0):
+  print("so sorry! Not Survived")
+else:
+  print("Survived")
+
